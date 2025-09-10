@@ -51,15 +51,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Image.asset('assets/images/logo.png', height: 60),
                       // Logomark (circular dots)
-                      Container(
-                        width: 38,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          color: Color(0xff85F0F7),
-                        ),
-                        child: CustomPaint(painter: _LogomarkPainter()),
-                      ),
+
+                      // Container(
+                      //   width: 38,
+                      //   height: 48,
+                      //   decoration: const BoxDecoration(
+                      //     color: Color(0xff85F0F7),
+                      //   ),
+                      //   child: CustomPaint(painter: _LogomarkPainter()),
+                      // ),
                       const SizedBox(width: 10),
                       // Logotext
                       const Text(

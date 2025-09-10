@@ -52,8 +52,6 @@ class _LoginTransitionScreenState extends State<LoginTransitionScreen>
     super.dispose();
   }
 
-
-
   void _login() {
     // Handle login logic
     ScaffoldMessenger.of(context).showSnackBar(
@@ -62,19 +60,19 @@ class _LoginTransitionScreenState extends State<LoginTransitionScreen>
   }
 
   String _getUniversityImage() {
-    if (_email == null) return 'assets/images/generic_campus.png';
+    if (_email == null) return 'assets/images/nust_cover.jpg';
     final lower = _email!.toLowerCase();
-    if (lower.endsWith('@nust.edu.pk')) return 'assets/images/nust_campus.png';
-    if (lower.endsWith('@fast.edu.pk')) return 'assets/images/fast_campus.png';
-    return 'assets/images/generic_campus.png';
+    if (lower.endsWith('@nust.edu.pk')) return 'assets/images/nust_cover.jpg';
+    if (lower.endsWith('@fast.edu.pk')) return 'assets/images/fast_cover.jpg';
+    return 'assets/images/nust_cover.jpg';
   }
 
   String _getUniversityLogo() {
-    if (_email == null) return 'U';
+    if (_email == null) return 'assets/images/logo.png';
     final lower = _email!.toLowerCase();
-    if (lower.endsWith('@nust.edu.pk')) return 'N';
-    if (lower.endsWith('@fast.edu.pk')) return 'F';
-    return 'U';
+    if (lower.endsWith('@nust.edu.pk')) return 'assets/images/nust_logo.png';
+    if (lower.endsWith('@fast.edu.pk')) return 'assets/images/fast_logo.png';
+    return 'assets/images/logo.png';
   }
 
   @override
@@ -104,138 +102,9 @@ class _LoginTransitionScreenState extends State<LoginTransitionScreen>
                         image: DecorationImage(
                           image: AssetImage(imagePath),
                           fit: BoxFit.cover,
-                          onError: (exception, stackTrace) {},
-                        ),
-                      ),
-                      // Fallback: Create university building matching Figma design
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(0xFF87CEEB), // Sky blue background
-                              Color(0xFF4A90E2), // Lighter blue at bottom
-                            ],
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            // Left red brick building
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              width: 150,
-                              height: 300,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color(0xFFD2691E), // Sandy brown
-                                      Color(0xFF8B4513), // Saddle brown
-                                    ],
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    // Windows rows for left building
-                                    for (int row = 0; row < 12; row++)
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 4,
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            for (int col = 0; col < 4; col++)
-                                              Container(
-                                                width: 12,
-                                                height: 8,
-                                                color: Colors.white.withOpacity(
-                                                  0.9,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            // Central blue glass tower (matches Figma)
-                            Positioned(
-                              bottom: 0,
-                              left: 150,
-                              width: 75,
-                              height: 380,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color(0xFF1E90FF), // Dodger blue
-                                      Color(0xFF4169E1), // Royal blue
-                                    ],
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    // Glass panels pattern
-                                    for (int i = 0; i < 20; i++)
-                                      Container(
-                                        margin: const EdgeInsets.all(1),
-                                        height: 15,
-                                        color: Colors.white.withOpacity(0.7),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            // Right red brick building
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              width: 150,
-                              height: 300,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color(0xFFD2691E), // Sandy brown
-                                      Color(0xFF8B4513), // Saddle brown
-                                    ],
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    // Windows rows for right building
-                                    for (int row = 0; row < 12; row++)
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 4,
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            for (int col = 0; col < 4; col++)
-                                              Container(
-                                                width: 12,
-                                                height: 8,
-                                                color: Colors.white.withOpacity(
-                                                  0.9,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                          onError: (exception, stackTrace) {
+                            // Image failed to load, show fallback
+                          },
                         ),
                       ),
                     ),
@@ -250,37 +119,34 @@ class _LoginTransitionScreenState extends State<LoginTransitionScreen>
             animation: _logoScale,
             builder: (context, child) {
               return Positioned(
-                top: 350, // Position logo much lower on the image area
-                left: 150, // Figma: x: 150
+                top: 175, // Position logo much lower on the image area
+                left: width / 2 - 50, // Center the logo horizontally
                 child: Transform.scale(
                   scale: _logoScale.value,
-                  child: Container(
-                    width: 75, // Figma: width: 75
-                    height: 75, // Figma: height: 75
-                    decoration: const BoxDecoration(
-                      color: Color(0xff85F0F7),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          color: Color(0xff2C2C2E),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            _getUniversityLogo(),
-                            style: const TextStyle(
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                  child: Center(
+                    child: CircleAvatar(
+                      radius:
+                          50, // Set radius to accommodate your desired image size
+                      backgroundColor: const Color.fromARGB(255, 51, 74, 75),
+                      child: Image.asset(
+                        _getUniversityLogo(),
+                        width:
+                            100, // Set both width and height for better control
+                        height: 100,
+                        fit: BoxFit
+                            .contain, // Use contain to maintain aspect ratio
                       ),
+
+                      //   Text(
+                      //     _getUniversityLogo(),
+                      //     style: const TextStyle(
+                      //       fontFamily: 'Inter',
+                      //       fontWeight: FontWeight.bold,
+                      //       fontSize: 24,
+                      //       color: Colors.white,
+                      //     ),
+                      //   ),
+                      // ),
                     ),
                   ),
                 ),
@@ -314,7 +180,8 @@ class _LoginTransitionScreenState extends State<LoginTransitionScreen>
           // Email 365 field - positioned exactly as in Figma
           Positioned(
             top: 374, // Figma: calc(50% - 14px) ≈ 374px for 812px screen height
-            left: 21, // Figma: calc(50% - 166.5px) ≈ 21px for 375px screen width
+            left:
+                21, // Figma: calc(50% - 166.5px) ≈ 21px for 375px screen width
             child: AnimatedBuilder(
               animation: _contentFade,
               builder: (context, child) {
@@ -347,7 +214,9 @@ class _LoginTransitionScreenState extends State<LoginTransitionScreen>
                         child: Text(
                           _email ?? 'your.email@university.edu.pk',
                           style: TextStyle(
-                            color: _email != null ? Colors.white : Colors.white54,
+                            color: _email != null
+                                ? Colors.white
+                                : Colors.white54,
                             fontSize: 16,
                           ),
                         ),
@@ -362,7 +231,8 @@ class _LoginTransitionScreenState extends State<LoginTransitionScreen>
           // Password field - positioned exactly as in Figma
           Positioned(
             top: 454, // Figma: calc(50% + 66px) ≈ 454px for 812px screen height
-            left: 21, // Figma: calc(50% - 166.5px) ≈ 21px for 375px screen width
+            left:
+                21, // Figma: calc(50% - 166.5px) ≈ 21px for 375px screen width
             child: AnimatedBuilder(
               animation: _contentFade,
               builder: (context, child) {
@@ -493,7 +363,7 @@ class _DiagonalImageClipper extends CustomClipper<Path> {
     Path path = Path();
     path.moveTo(0, 0); // top-left
     path.lineTo(size.width, 0); // top-right
-    path.lineTo(size.width, 100); // 100px below top-right
+    path.lineTo(size.width, 220); // 220px below top-right
     path.lineTo(0, size.height); // bottom-left
     path.close();
     return path;
@@ -502,37 +372,6 @@ class _DiagonalImageClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
-// class _DiagonalImageClipper extends CustomClipper<Path> {
-//   @override
-//   Path getClip(Size size) {
-//     final path = Path();
-
-//     // The Figma design shows the university image covering most of the screen
-//     // with just a SUBTLE diagonal cut at the bottom where it meets the dark area
-//     path.moveTo(0, 0); // Start at top-left corner
-//     path.lineTo(size.width, 0); // Go across full width at top
-//     path.lineTo(
-//       size.width,
-//       size.height * 0.85,
-//     ); // Right side - most of the height
-
-//     // Very subtle diagonal cut at bottom - not a dramatic perspective effect
-//     path.quadraticBezierTo(
-//       size.width * 0.7,
-//       size.height * 0.88, // Slight curve
-//       0,
-//       size.height * 0.82, // Left side ends slightly higher
-//     );
-
-//     // Close the path back to start
-//     path.close();
-
-//     return path;
-//   }
-
-//   @override
-//   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
-// }
 
 class _WavePainter extends CustomPainter {
   @override
