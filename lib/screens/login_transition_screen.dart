@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:kampus_hall_3/screens/select_interests.dart';
 
 class LoginTransitionScreen extends StatefulWidget {
   static const routeName = '/login/transition';
@@ -53,10 +54,8 @@ class _LoginTransitionScreenState extends State<LoginTransitionScreen>
   }
 
   void _login() {
-    // Handle login logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login functionality not implemented yet')),
-    );
+    // Navigate to Select Interests screen
+    Navigator.of(context).pushNamed(SelectInterests.routeName);
   }
 
   String _getUniversityImage() {

@@ -46,12 +46,12 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.15),
                   // Company logo section
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/logo.png', height: 60),
+                      Image.asset('assets/images/logo.png', height: 80),
                       // Logomark (circular dots)
 
                       // Container(
@@ -62,31 +62,31 @@ class _LoginScreenState extends State<LoginScreen> {
                       //   ),
                       //   child: CustomPaint(painter: _LogomarkPainter()),
                       // ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 15),
                       // Logotext
                       const Text(
                         'Kampus Hall',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.bold,
-                          fontSize: 24,
+                          fontSize: 30,
                           color: Color(0xffEFEFEF),
                         ),
                       ),
                     ],
                   ).animate().fadeIn(duration: 800.ms),
-                  const SizedBox(height: 133), // 332 - 199 = 133
+                  const SizedBox(height: 100), // 332 - 199 = 133
                   // Login title
                   const Text(
                     'Login',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.bold,
-                      fontSize: 24,
+                      fontSize: 27,
                       color: Color(0xffEFEFEF),
                     ),
                   ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
-                  const SizedBox(height: 60), // 392 - 332 = 60
+                  const SizedBox(height: 30), // 392 - 332 = 60
                   // Email input section
                   const Text(
                     'Enter Email Address',
