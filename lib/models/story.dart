@@ -49,6 +49,7 @@ class StoryGroup {
   final String groupTitle;
   final Color color;
   final IconData icon;
+  final String? imageUrl; // Optional image URL for groups like PAF
   final List<Story> stories;
   final bool hasUnviewedStories;
 
@@ -57,6 +58,7 @@ class StoryGroup {
     required this.groupTitle,
     required this.color,
     required this.icon,
+    this.imageUrl,
     required this.stories,
     required this.hasUnviewedStories,
   });
@@ -66,6 +68,7 @@ class StoryGroup {
     String? groupTitle,
     Color? color,
     IconData? icon,
+    String? imageUrl,
     List<Story>? stories,
     bool? hasUnviewedStories,
   }) {
@@ -74,6 +77,7 @@ class StoryGroup {
       groupTitle: groupTitle ?? this.groupTitle,
       color: color ?? this.color,
       icon: icon ?? this.icon,
+      imageUrl: imageUrl ?? this.imageUrl,
       stories: stories ?? this.stories,
       hasUnviewedStories: hasUnviewedStories ?? this.hasUnviewedStories,
     );

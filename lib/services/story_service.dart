@@ -13,6 +13,7 @@ class StoryService {
       groupTitle: 'PAF IAST',
       color: const Color(0xff0066CC),
       icon: Icons.school,
+      imageUrl: 'assets/images/PAF_logo.png',
       hasUnviewedStories: true,
       stories: [
         Story(
