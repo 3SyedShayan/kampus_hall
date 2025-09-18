@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../services/society_service.dart';
+import '../models/society.dart';
 
 class SocietyChatScreen extends StatefulWidget {
   static const routeName = '/society-chat';
@@ -15,12 +17,52 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
   late final Animation<double> _fadeAnimation;
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final SocietyService _societyService = SocietyService();
+  
+  String? societyId;
+  String? societyTitle;
+  Color? societyColor;
+  Society? society;
+  bool isLoading = true;
+  bool isMember = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: 800.ms)..forward();
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (isLoading) {
+      _loadSocietyData();
+    }
+  }
+
+  void _loadSocietyData() {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    
+    if (args != null) {
+      setState(() {
+        societyId = args['societyId'] as String?;
+        societyTitle = args['societyTitle'] as String?;
+        societyColor = args['societyColor'] as Color?;
+        
+        if (societyId != null) {
+          society = _societyService.getSocietyById(societyId!);
+          isMember = _societyService.isMemberOfSociety(societyId!);
+        }
+        
+        isLoading = false;
+      });
+    } else {
+      // No arguments provided, navigate back
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pop();
+      });
+    }
   }
 
   @override
@@ -238,9 +280,130 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> society =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    // Show loading screen
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: const Color(0xff1C1C1E),
+        body: const Center(
+          child: CircularProgressIndicator(
+            color: Colors.white,
+          ),
+        ),
+      );
+    }
 
+    // Show access denied screen if not a member
+    if (!isMember || society == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xff1C1C1E),
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: const Color(0xff2C2C2E),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Access Restricted',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(width: 48), // Balance the back button
+                  ],
+                ),
+              ),
+              // Access denied content
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock_outline,
+                          size: 80,
+                          color: Colors.white.withOpacity(0.3),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Members Only',
+                          style: TextStyle(
+                            fontFamily: 'Albert Sans',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'You need to join ${societyTitle ?? 'this society'} to access the chat.',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.7),
+                            height: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: societyColor ?? const Color(0xffB18CFE),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Go Back',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Show the actual chat screen for members
     return Scaffold(
       backgroundColor: const Color(0xff1C1C1E),
       body: SafeArea(
@@ -274,11 +437,11 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: society['color'],
+                        color: societyColor ?? society!.color,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
-                        society['icon'],
+                        Icons.group, // Default icon, could be made dynamic later
                         color: Colors.white,
                         size: 24,
                       ),
@@ -289,7 +452,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            society['title'],
+                            societyTitle ?? society!.title,
                             style: const TextStyle(
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.bold,
@@ -299,7 +462,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
                             ),
                           ),
                           Text(
-                            '${society['members']} members',
+                            '${society!.memberCount} members',
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.normal,
@@ -332,28 +495,12 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
 
                     // Event Card
                     _buildEventCard(
-                      title: society['title'] == 'Xup Studio'
-                          ? 'Music Jam Session'
-                          : society['title'] == 'Tech Club'
-                          ? 'AI Workshop'
-                          : society['title'] == 'Art Society'
-                          ? 'Gallery Exhibition'
-                          : society['title'] == 'Science Club'
-                          ? 'Lab Experiment'
-                          : 'Community Meeting',
+                      title: 'Community Meeting',
                       time: 'Today at 3:00 PM',
-                      location: society['title'] == 'Xup Studio'
-                          ? 'Music Room'
-                          : society['title'] == 'Tech Club'
-                          ? 'Computer Lab'
-                          : society['title'] == 'Art Society'
-                          ? 'Art Gallery'
-                          : society['title'] == 'Science Club'
-                          ? 'Science Lab'
-                          : 'Main Hall',
-                      backgroundColor: society['color'],
+                      location: 'Main Hall',
+                      backgroundColor: societyColor ?? society!.color,
                       textColor: Colors.white,
-                      icon: society['icon'],
+                      icon: Icons.event,
                     ),
 
                     const SizedBox(height: 16),
@@ -364,20 +511,20 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
                           'Hey everyone! Don\'t forget about our event today',
                       time: '10:30 AM',
                       isMe: false,
-                      societyColor: society['color'],
+                      societyColor: societyColor ?? society!.color,
                       senderName: 'Sarah Wilson',
                     ),
                     _buildMessage(
                       message: 'Looking forward to it! 🎉',
                       time: '10:35 AM',
                       isMe: true,
-                      societyColor: society['color'],
+                      societyColor: societyColor ?? society!.color,
                     ),
                     _buildMessage(
                       message: 'Should we bring anything specific?',
                       time: '10:40 AM',
                       isMe: false,
-                      societyColor: society['color'],
+                      societyColor: societyColor ?? society!.color,
                       senderName: 'Mike Chen',
                     ),
                     _buildMessage(
@@ -385,14 +532,14 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
                           'Just bring your enthusiasm! Everything else is provided',
                       time: '10:45 AM',
                       isMe: false,
-                      societyColor: society['color'],
+                      societyColor: societyColor ?? society!.color,
                       senderName: 'Sarah Wilson',
                     ),
                     _buildMessage(
                       message: 'Perfect! See you all there',
                       time: '10:50 AM',
                       isMe: true,
-                      societyColor: society['color'],
+                      societyColor: societyColor ?? society!.color,
                     ),
 
                     const SizedBox(height: 100),
@@ -450,7 +597,7 @@ class _SocietyChatScreenState extends State<SocietyChatScreen>
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: society['color'],
+                          color: societyColor ?? society!.color,
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: const Icon(

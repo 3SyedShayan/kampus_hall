@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'main_navigation_screen.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class SelectInterestsScreen extends StatefulWidget {
@@ -82,9 +83,13 @@ class _SelectInterestsScreenState extends State<SelectInterestsScreen>
       ),
     );
 
-    // Navigate to home screen after successful selection
+    // Navigate to main navigation screen after successful selection
     Future.delayed(const Duration(milliseconds: 1500), () {
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        MainNavigationScreen.routeName,
+        (route) => false,
+      );
     });
   }
 

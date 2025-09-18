@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:kampus_hall_3/screens/select_interests_screen.dart';
+import 'package:kampus_hall/screens/select_interests_screen.dart';
 
 class SelectInterests extends StatefulWidget {
   static const routeName = '/select-interests-original';

@@ -6,6 +6,8 @@ import 'screens/home_screen.dart';
 import 'screens/select_interests.dart';
 import 'screens/chat_screen.dart';
 import 'screens/society_chat_screen.dart';
+import 'screens/main_navigation_screen.dart';
+import 'screens/story_viewer_screen.dart';
 
 void main() {
   runApp(const KampusHallApp());
@@ -44,9 +46,11 @@ class KampusHallApp extends StatelessWidget {
         LoginTransitionScreen.routeName: (_) => const LoginTransitionScreen(),
         SelectInterestsScreen.routeName: (_) => const SelectInterestsScreen(),
         SelectInterests.routeName: (_) => const SelectInterests(),
+        MainNavigationScreen.routeName: (_) => const MainNavigationScreen(),
         HomeScreen.routeName: (_) => const HomeScreen(),
         ChatScreen.routeName: (_) => const ChatScreen(),
         SocietyChatScreen.routeName: (_) => const SocietyChatScreen(),
+        StoryViewerScreen.routeName: (_) => const StoryViewerScreen(),
       },
     );
   }

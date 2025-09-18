@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:ui';
+import '../models/society.dart';
+import '../services/society_service.dart';
+import '../services/story_service.dart';
+import '../models/story.dart';
+import 'society_chat_screen.dart';
+import 'story_viewer_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -15,52 +21,13 @@ class _HomeScreenState extends State<HomeScreen>
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
 
-  // Track joined societies
-  final Set<String> _joinedSocieties = <String>{};
+  // Society service instance
+  final SocietyService _societyService = SocietyService();
+  final StoryService _storyService = StoryService();
 
-  // Dummy data for stories
-  final List<Map<String, dynamic>> stories = [
-    {
-      'title': 'Artificial I.',
-      'color': const Color(0xffB18CFE),
-      'icon': Icons.psychology,
-    },
-    {
-      'title': 'Science',
-      'color': const Color(0xffEE719E),
-      'icon': Icons.science,
-    },
-    {'title': 'English', 'color': const Color(0xffFF8C82), 'icon': Icons.book},
-    {
-      'title': 'Music',
-      'color': const Color(0xffFFAB01),
-      'icon': Icons.music_note,
-    },
-    {
-      'title': 'Math',
-      'color': const Color(0xff64FCD9),
-      'icon': Icons.calculate,
-    },
-  ];
-
-  // Dummy data for societies
-  final List<Map<String, dynamic>> societies = [
-    {
-      'title': 'Xup Studio',
-      'color': const Color(0xffB18CFE),
-      'subtitle': 'Music Society',
-    },
-    {
-      'title': 'Welfare So',
-      'color': const Color(0xff64FCD9),
-      'subtitle': 'Social Impact',
-    },
-    {
-      'title': 'Tech Club',
-      'color': const Color(0xffEE719E),
-      'subtitle': 'Technology',
-    },
-  ];
+  // Dynamic societies data
+  List<Society> _allSocieties = [];
+  List<StoryGroup> _storyGroups = [];
 
   // Dummy data for events
   final List<Map<String, dynamic>> events = [
@@ -92,6 +59,22 @@ class _HomeScreenState extends State<HomeScreen>
     _controller = AnimationController(vsync: this, duration: 800.ms)..forward();
 
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+
+    // Load society and story data
+    _loadSocietyData();
+    _loadStoryData();
+  }
+
+  void _loadSocietyData() {
+    setState(() {
+      _allSocieties = _societyService.getAllSocieties();
+    });
+  }
+
+  void _loadStoryData() {
+    setState(() {
+      _storyGroups = _storyService.getAllStoryGroups();
+    });
   }
 
   @override
@@ -200,51 +183,78 @@ class _HomeScreenState extends State<HomeScreen>
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               padding: const EdgeInsets.only(right: 15),
-                              itemCount: stories.length,
+                              itemCount: _storyGroups.length,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(width: 15),
                               itemBuilder: (context, index) {
-                                final story = stories[index];
-                                return Container(
-                                  width: 90,
-                                  height: 98,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xff3A3A3C),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 50,
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                          color: story['color'],
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: const Color(0xff48484A),
-                                            width: 2,
+                                final storyGroup = _storyGroups[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      StoryViewerScreen.routeName,
+                                      arguments: {
+                                        'groupId': storyGroup.groupId,
+                                      },
+                                    ).then((_) {
+                                      // Refresh story data when returning from story viewer
+                                      _loadStoryData();
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 90,
+                                    height: 98,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xff3A3A3C),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 50,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: storyGroup.color,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color:
+                                                  storyGroup.hasUnviewedStories
+                                                  ? const Color(
+                                                      0xff85F0F7,
+                                                    ) // Cyan for unviewed
+                                                  : const Color(
+                                                      0xff48484A,
+                                                    ), // Gray for viewed
+                                              width:
+                                                  storyGroup.hasUnviewedStories
+                                                  ? 3
+                                                  : 2,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            storyGroup.icon,
+                                            color: Colors.white,
+                                            size: 24,
                                           ),
                                         ),
-                                        child: Icon(
-                                          story['icon'],
-                                          color: Colors.white,
-                                          size: 24,
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          storyGroup.groupTitle,
+                                          style: const TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 15,
+                                            color: Colors.white,
+                                            height: 1.33, // 20/15
+                                          ),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        story['title'],
-                                        style: const TextStyle(
-                                          fontFamily: 'Inter',
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 15,
-                                          color: Colors.white,
-                                          height: 1.33, // 20/15
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -278,83 +288,156 @@ class _HomeScreenState extends State<HomeScreen>
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               padding: const EdgeInsets.only(right: 15),
-                              itemCount: societies.length,
+                              itemCount: _allSocieties.length,
                               separatorBuilder: (context, index) =>
                                   const SizedBox(width: 15),
                               itemBuilder: (context, index) {
-                                final society = societies[index];
+                                final society = _allSocieties[index];
+                                final isJoined = _societyService
+                                    .isMemberOfSociety(society.id);
                                 return SizedBox(
                                   width: 227,
                                   height: 175,
                                   child: Stack(
                                     children: [
-                                      // Society card (shorter height)
-                                      Container(
-                                        width: 227,
-                                        height:
-                                            156, // 175 - 19 = 156 (leaving space for button)
-                                        decoration: BoxDecoration(
-                                          color: society['color'],
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                                      // Society card (shorter height) - clickable if joined
+                                      GestureDetector(
+                                        onTap: isJoined
+                                            ? () {
+                                                Navigator.of(context).pushNamed(
+                                                  SocietyChatScreen.routeName,
+                                                  arguments: {
+                                                    'societyId': society.id,
+                                                    'societyTitle':
+                                                        society.title,
+                                                    'societyColor':
+                                                        society.color,
+                                                  },
+                                                );
+                                              }
+                                            : null,
+                                        child: Container(
+                                          width: 227,
+                                          height:
+                                              156, // 175 - 19 = 156 (leaving space for button)
+                                          decoration: BoxDecoration(
+                                            color: society.color,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            // Enhanced visual indicator for joined societies
+                                            border: isJoined
+                                                ? Border.all(
+                                                    color: const Color(
+                                                      0xff85F0F7,
+                                                    ), // Brand cyan color
+                                                    width: 3,
+                                                  )
+                                                : Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.1),
+                                                    width: 1,
+                                                  ),
+                                            // Add subtle shadow for joined societies
+                                            boxShadow: isJoined
+                                                ? [
+                                                    BoxShadow(
+                                                      color: const Color(
+                                                        0xff85F0F7,
+                                                      ).withOpacity(0.3),
+                                                      blurRadius: 8,
+                                                      spreadRadius: 1,
+                                                      offset: const Offset(
+                                                        0,
+                                                        2,
+                                                      ),
+                                                    ),
+                                                  ]
+                                                : null,
                                           ),
-                                        ),
-                                        child: Stack(
-                                          children: [
-                                            // Society title
-                                            Positioned(
-                                              left: 15,
-                                              top: 20,
-                                              child: SizedBox(
-                                                width: 151,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      society['title'],
-                                                      style: const TextStyle(
-                                                        fontFamily:
-                                                            'Albert Sans',
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 22,
+                                          child: Stack(
+                                            children: [
+                                              // Society title
+                                              Positioned(
+                                                left: 15,
+                                                top: 20,
+                                                child: SizedBox(
+                                                  width: 151,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        society.title,
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'Albert Sans',
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 22,
+                                                          color: Colors.white,
+                                                          height: 1.27, // 28/22
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        society.subtitle,
+                                                        style: TextStyle(
+                                                          fontFamily: 'Inter',
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 12,
+                                                          color: Colors.white
+                                                              .withOpacity(0.8),
+                                                          height: 1.33, // 16/12
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              // Decorative elements
+                                              Positioned(
+                                                right: -20,
+                                                top: 20,
+                                                child: Container(
+                                                  width: 120,
+                                                  height: 120,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white
+                                                        .withOpacity(0.1),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                ),
+                                              ),
+                                              // Joined indicator
+                                              if (isJoined)
+                                                Positioned(
+                                                  right: 10,
+                                                  top: 10,
+                                                  child: Container(
+                                                    width: 24,
+                                                    height: 24,
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(
+                                                        0xff85F0F7,
+                                                      ),
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
                                                         color: Colors.white,
-                                                        height: 1.27, // 28/22
+                                                        width: 2,
                                                       ),
                                                     ),
-                                                    const SizedBox(height: 4),
-                                                    Text(
-                                                      society['subtitle'],
-                                                      style: TextStyle(
-                                                        fontFamily: 'Inter',
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 12,
-                                                        color: Colors.white
-                                                            .withOpacity(0.8),
-                                                        height: 1.33, // 16/12
-                                                      ),
+                                                    child: const Icon(
+                                                      Icons.check,
+                                                      size: 14,
+                                                      color: Colors.white,
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            // Decorative elements (placeholder)
-                                            Positioned(
-                                              right: -20,
-                                              top: 20,
-                                              child: Container(
-                                                width: 120,
-                                                height: 120,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white
-                                                      .withOpacity(0.1),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       // Join button hanging outside the card
@@ -363,55 +446,62 @@ class _HomeScreenState extends State<HomeScreen>
                                         top:
                                             103, // This positions it to hang outside
                                         child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              final societyTitle =
-                                                  society['title'];
-                                              if (_joinedSocieties.contains(
-                                                societyTitle,
-                                              )) {
-                                                // Leave the society
-                                                _joinedSocieties.remove(
-                                                  societyTitle,
-                                                );
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      'Left $societyTitle',
+                                          onTap: () async {
+                                            final societyTitle = society.title;
+                                            final societyId = society.id;
+
+                                            if (isJoined) {
+                                              // Leave the society
+                                              final success =
+                                                  await _societyService
+                                                      .leaveSociety(societyId);
+                                              if (success) {
+                                                _loadSocietyData(); // Refresh data
+                                                if (mounted) {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Left $societyTitle',
+                                                      ),
+                                                      duration: const Duration(
+                                                        seconds: 2,
+                                                      ),
                                                     ),
-                                                    duration: const Duration(
-                                                      seconds: 2,
-                                                    ),
-                                                  ),
-                                                );
-                                              } else {
-                                                // Join the society
-                                                _joinedSocieties.add(
-                                                  societyTitle,
-                                                );
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      '$societyTitle has been joined!',
-                                                    ),
-                                                    duration: const Duration(
-                                                      seconds: 2,
-                                                    ),
-                                                  ),
-                                                );
+                                                  );
+                                                }
                                               }
-                                            });
+                                            } else {
+                                              // Join the society
+                                              final success =
+                                                  await _societyService
+                                                      .joinSociety(societyId);
+                                              if (success) {
+                                                _loadSocietyData(); // Refresh data
+                                                if (mounted) {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        '$societyTitle has been joined!',
+                                                      ),
+                                                      duration: const Duration(
+                                                        seconds: 2,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                            }
                                           },
                                           child: Container(
                                             width: 72,
                                             height: 72,
                                             decoration: BoxDecoration(
                                               color: Color.lerp(
-                                                society['color'],
+                                                society.color,
                                                 Colors.white,
                                                 0.6, // 60% lighter than the card color
                                               ), // Lighter version of card color
@@ -429,8 +519,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                     58, // Slightly smaller to show the light ring
                                                 height: 58,
                                                 decoration: BoxDecoration(
-                                                  color:
-                                                      society['color'], // Card color for inner circle
+                                                  color: society
+                                                      .color, // Card color for inner circle
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
                                                     color: const Color(
@@ -441,9 +531,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 ),
                                                 child: Center(
                                                   child: Text(
-                                                    _joinedSocieties.contains(
-                                                          society['title'],
-                                                        )
+                                                    isJoined
                                                         ? 'JOINED'
                                                         : 'JOIN',
                                                     style: const TextStyle(
@@ -1234,43 +1322,43 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
       // Bottom Navigation Bar
-      bottomNavigationBar: Container(
-        height: 83,
-        decoration: BoxDecoration(
-          color: const Color(0xff48484A).withOpacity(0.72),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              offset: const Offset(0, -0.5),
-              blurRadius: 0,
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  _buildNavItem('Discover', Icons.explore, true),
-                  _buildNavItem('Search', Icons.search, false),
-                  _buildNavItem('Chats', Icons.chat_bubble_outline, false),
-                  _buildNavItem('Profile', Icons.person_outline, false),
-                ],
-              ),
-            ),
-            // Home indicator
-            Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              width: 134,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.48),
-                borderRadius: BorderRadius.circular(100),
-              ),
-            ),
-          ],
-        ),
-      ),
+      // bottomNavigationBar: Container(
+      //   height: 83,
+      //   decoration: BoxDecoration(
+      //     color: const Color(0xff48484A).withOpacity(0.72),
+      //     boxShadow: [
+      //       BoxShadow(
+      //         color: Colors.black.withOpacity(0.3),
+      //         offset: const Offset(0, -0.5),
+      //         blurRadius: 0,
+      //       ),
+      //     ],
+      //   ),
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         child: Row(
+      //           children: [
+      //             _buildNavItem('Discover', Icons.explore, true),
+      //             _buildNavItem('Search', Icons.search, false),
+      //             _buildNavItem('Chats', Icons.chat_bubble_outline, false),
+      //             _buildNavItem('Profile', Icons.person_outline, false),
+      //           ],
+      //         ),
+      //       ),
+      //       // Home indicator
+      //       Container(
+      //         margin: const EdgeInsets.only(bottom: 8),
+      //         width: 134,
+      //         height: 5,
+      //         decoration: BoxDecoration(
+      //           color: Colors.white.withOpacity(0.48),
+      //           borderRadius: BorderRadius.circular(100),
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 
@@ -1279,7 +1367,13 @@ class _HomeScreenState extends State<HomeScreen>
       child: GestureDetector(
         onTap: () {
           if (title == 'Chats') {
-            Navigator.pushNamed(context, '/chat');
+            // Navigate to main navigation with chat tab selected
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/main',
+              (route) => false,
+              arguments: {'initialIndex': 1}, // 1 is the chat tab index
+            );
           }
           // Add other navigation logic here for other tabs if needed
         },
@@ -1504,6 +1598,7 @@ class _HomeScreenState extends State<HomeScreen>
                             GestureDetector(
                               onTap: () {
                                 // Show join effect
+                                ScaffoldMessenger.of(context).clearSnackBars();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('Joined ${event['title']}!'),

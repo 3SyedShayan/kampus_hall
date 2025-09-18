@@ -183,27 +183,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-class _LogomarkPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xff2C2C2E)
-      ..style = PaintingStyle.fill;
-
-    // Draw the dot pattern to create the logomark
-    final dotRadius = 3.0;
-    final spacing = 8.0;
-
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 4; j++) {
-        final x = 6 + (i * spacing);
-        final y = 6 + (j * spacing);
-        canvas.drawCircle(Offset(x, y), dotRadius, paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
