@@ -16,7 +16,8 @@ class SocietyService {
       title: 'Xup Studio',
       subtitle: 'Music Society',
       color: const Color(0xffB18CFE),
-      description: 'A creative space for music enthusiasts to collaborate, learn, and perform together.',
+      description:
+          'A creative space for music enthusiasts to collaborate, learn, and perform together.',
       tags: ['music', 'creative', 'performance'],
       memberCount: 127,
       createdAt: DateTime.now().subtract(const Duration(days: 180)),
@@ -25,8 +26,9 @@ class SocietyService {
       id: 'soc_2',
       title: 'Welfare So',
       subtitle: 'Social Impact',
-      color: const Color(0xff64FCD9),
-      description: 'Working together to make a positive impact in our community through various social initiatives.',
+      color: const Color.fromARGB(255, 48, 198, 163),
+      description:
+          'Working together to make a positive impact in our community through various social initiatives.',
       tags: ['social', 'impact', 'volunteer'],
       memberCount: 89,
       createdAt: DateTime.now().subtract(const Duration(days: 120)),
@@ -36,7 +38,8 @@ class SocietyService {
       title: 'Tech Club',
       subtitle: 'Technology',
       color: const Color(0xffEE719E),
-      description: 'Exploring the latest in technology, coding workshops, and tech innovation projects.',
+      description:
+          'Exploring the latest in technology, coding workshops, and tech innovation projects.',
       tags: ['technology', 'coding', 'innovation'],
       memberCount: 156,
       createdAt: DateTime.now().subtract(const Duration(days: 90)),
@@ -46,7 +49,8 @@ class SocietyService {
       title: 'Green Earth',
       subtitle: 'Environmental',
       color: const Color(0xff4CAF50),
-      description: 'Dedicated to environmental conservation and sustainable living practices.',
+      description:
+          'Dedicated to environmental conservation and sustainable living practices.',
       tags: ['environment', 'sustainability', 'green'],
       memberCount: 67,
       createdAt: DateTime.now().subtract(const Duration(days: 60)),
@@ -56,7 +60,8 @@ class SocietyService {
       title: 'Art Canvas',
       subtitle: 'Visual Arts',
       color: const Color(0xffFF8C82),
-      description: 'A community for artists to showcase their work and learn new techniques.',
+      description:
+          'A community for artists to showcase their work and learn new techniques.',
       tags: ['art', 'visual', 'creative'],
       memberCount: 94,
       createdAt: DateTime.now().subtract(const Duration(days: 45)),
@@ -66,7 +71,8 @@ class SocietyService {
       title: 'Sports Hub',
       subtitle: 'Athletics',
       color: const Color(0xffFFAB01),
-      description: 'Bringing together sports enthusiasts for various athletic activities and competitions.',
+      description:
+          'Bringing together sports enthusiasts for various athletic activities and competitions.',
       tags: ['sports', 'athletics', 'fitness'],
       memberCount: 203,
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
@@ -97,9 +103,10 @@ class SocietyService {
   List<Society> getJoinedSocieties({String? userId}) {
     final targetUserId = userId ?? currentUserId;
     final userMemberships = _memberships
-        .where((membership) => 
-            membership.userId == targetUserId && 
-            membership.isActive)
+        .where(
+          (membership) =>
+              membership.userId == targetUserId && membership.isActive,
+        )
         .map((membership) => membership.societyId)
         .toSet();
 
@@ -112,9 +119,10 @@ class SocietyService {
   List<Society> getAvailableSocieties({String? userId}) {
     final targetUserId = userId ?? currentUserId;
     final userMemberships = _memberships
-        .where((membership) => 
-            membership.userId == targetUserId && 
-            membership.isActive)
+        .where(
+          (membership) =>
+              membership.userId == targetUserId && membership.isActive,
+        )
         .map((membership) => membership.societyId)
         .toSet();
 
@@ -126,16 +134,18 @@ class SocietyService {
   // Check if user is member of a society
   bool isMemberOfSociety(String societyId, {String? userId}) {
     final targetUserId = userId ?? currentUserId;
-    return _memberships.any((membership) =>
-        membership.societyId == societyId &&
-        membership.userId == targetUserId &&
-        membership.isActive);
+    return _memberships.any(
+      (membership) =>
+          membership.societyId == societyId &&
+          membership.userId == targetUserId &&
+          membership.isActive,
+    );
   }
 
   // Join a society
   Future<bool> joinSociety(String societyId, {String? userId}) async {
     final targetUserId = userId ?? currentUserId;
-    
+
     // Check if already a member
     if (isMemberOfSociety(societyId, userId: targetUserId)) {
       return false;
@@ -147,12 +157,14 @@ class SocietyService {
     }
 
     // Add membership
-    _memberships.add(UserSocietyMembership(
-      societyId: societyId,
-      userId: targetUserId,
-      joinedAt: DateTime.now(),
-      role: 'member',
-    ));
+    _memberships.add(
+      UserSocietyMembership(
+        societyId: societyId,
+        userId: targetUserId,
+        joinedAt: DateTime.now(),
+        role: 'member',
+      ),
+    );
 
     // Update member count
     final societyIndex = _societies.indexWhere((s) => s.id == societyId);
@@ -168,12 +180,14 @@ class SocietyService {
   // Leave a society
   Future<bool> leaveSociety(String societyId, {String? userId}) async {
     final targetUserId = userId ?? currentUserId;
-    
+
     // Find and remove membership
-    final membershipIndex = _memberships.indexWhere((membership) =>
-        membership.societyId == societyId &&
-        membership.userId == targetUserId &&
-        membership.isActive);
+    final membershipIndex = _memberships.indexWhere(
+      (membership) =>
+          membership.societyId == societyId &&
+          membership.userId == targetUserId &&
+          membership.isActive,
+    );
 
     if (membershipIndex == -1) {
       return false;
@@ -205,10 +219,12 @@ class SocietyService {
   String? getUserRoleInSociety(String societyId, {String? userId}) {
     final targetUserId = userId ?? currentUserId;
     try {
-      final membership = _memberships.firstWhere((membership) =>
-          membership.societyId == societyId &&
-          membership.userId == targetUserId &&
-          membership.isActive);
+      final membership = _memberships.firstWhere(
+        (membership) =>
+            membership.societyId == societyId &&
+            membership.userId == targetUserId &&
+            membership.isActive,
+      );
       return membership.role;
     } catch (e) {
       return null;
@@ -218,9 +234,15 @@ class SocietyService {
   // Search societies by title or tags
   List<Society> searchSocieties(String query) {
     final lowercaseQuery = query.toLowerCase();
-    return _societies.where((society) =>
-        society.title.toLowerCase().contains(lowercaseQuery) ||
-        society.subtitle.toLowerCase().contains(lowercaseQuery) ||
-        society.tags.any((tag) => tag.toLowerCase().contains(lowercaseQuery))).toList();
+    return _societies
+        .where(
+          (society) =>
+              society.title.toLowerCase().contains(lowercaseQuery) ||
+              society.subtitle.toLowerCase().contains(lowercaseQuery) ||
+              society.tags.any(
+                (tag) => tag.toLowerCase().contains(lowercaseQuery),
+              ),
+        )
+        .toList();
   }
 }

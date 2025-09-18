@@ -108,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen>
                         ),
                         const Expanded(
                           child: Text(
-                            'Society Chats',
+                            'Chats',
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.bold,

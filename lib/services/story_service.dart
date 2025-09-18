@@ -9,6 +9,49 @@ class StoryService {
   // Mock story data
   final List<StoryGroup> _storyGroups = [
     StoryGroup(
+      groupId: 'paf_stories',
+      groupTitle: 'PAF IAST',
+      color: const Color(0xff0066CC),
+      icon: Icons.school,
+      hasUnviewedStories: true,
+      stories: [
+        Story(
+          id: 'paf_1',
+          title: 'New Semester',
+          content:
+              'Welcome to the new semester at Pak Austria Fachhochschule! Exciting courses ahead.',
+          imageUrl:
+              'https://via.placeholder.com/400x800/0066CC/FFFFFF?text=New+Semester',
+          timestamp: DateTime.now().subtract(const Duration(hours: 4)),
+          authorName: 'PAF Admin',
+          authorAvatarUrl: 'assets/images/PAF_logo.png',
+        ),
+        Story(
+          id: 'paf_2',
+          title: 'Campus Tour',
+          content:
+              'Join us for a virtual campus tour! Discover our state-of-the-art facilities and labs.',
+          imageUrl:
+              'https://via.placeholder.com/400x800/0066CC/FFFFFF?text=Campus+Tour',
+          timestamp: DateTime.now().subtract(const Duration(hours: 12)),
+          authorName: 'Student Affairs',
+          authorAvatarUrl: 'assets/images/PAF_logo.png',
+        ),
+        Story(
+          id: 'paf_3',
+          title: 'Research Excellence',
+          content:
+              'Our students and faculty continue to excel in research and innovation projects.',
+          imageUrl:
+              'https://via.placeholder.com/400x800/0066CC/FFFFFF?text=Research',
+          timestamp: DateTime.now().subtract(const Duration(days: 1)),
+          authorName: 'Research Dept',
+          authorAvatarUrl: 'assets/images/PAF_logo.png',
+        ),
+      ],
+    ),
+
+    StoryGroup(
       groupId: 'ai_stories',
       groupTitle: 'Artificial I.',
       color: const Color(0xffB18CFE),
@@ -50,6 +93,63 @@ class StoryService {
           authorName: 'Tech Team',
           authorAvatarUrl:
               'https://via.placeholder.com/40x40/B18CFE/FFFFFF?text=TT',
+        ),
+      ],
+    ),
+    StoryGroup(
+      groupId: 'stc_stories',
+      groupTitle: 'STC Cafe',
+      color: const Color(0xffFF6B35),
+      icon: Icons.restaurant,
+      hasUnviewedStories: true,
+      stories: [
+        Story(
+          id: 'stc_1',
+          title: 'Today\'s Special',
+          content:
+              'Try our delicious chef\'s special today! Fresh ingredients and amazing flavors await you.',
+          imageUrl:
+              'https://via.placeholder.com/400x800/FF6B35/FFFFFF?text=Chef+Special',
+          timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
+          authorName: 'Chef Ali',
+          authorAvatarUrl:
+              'https://via.placeholder.com/40x40/FF6B35/FFFFFF?text=STC',
+        ),
+        Story(
+          id: 'stc_2',
+          title: 'Happy Hour',
+          content:
+              'Join us for happy hour! Special discounts on all beverages and appetizers until 7 PM.',
+          imageUrl:
+              'https://via.placeholder.com/400x800/FF6B35/FFFFFF?text=Happy+Hour',
+          timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+          authorName: 'STC Manager',
+          authorAvatarUrl:
+              'https://via.placeholder.com/40x40/FF6B35/FFFFFF?text=STC',
+        ),
+        Story(
+          id: 'stc_3',
+          title: 'New Menu',
+          content:
+              'Exciting news! We\'ve launched our new summer menu with fresh, seasonal dishes.',
+          imageUrl:
+              'https://via.placeholder.com/400x800/FF6B35/FFFFFF?text=New+Menu',
+          timestamp: DateTime.now().subtract(const Duration(hours: 6)),
+          authorName: 'STC Team',
+          authorAvatarUrl:
+              'https://via.placeholder.com/40x40/FF6B35/FFFFFF?text=STC',
+        ),
+        Story(
+          id: 'stc_4',
+          title: 'Weekend Brunch',
+          content:
+              'Don\'t miss our weekend brunch buffet! Unlimited delicious food and fresh juices.',
+          imageUrl:
+              'https://via.placeholder.com/400x800/FF6B35/FFFFFF?text=Brunch',
+          timestamp: DateTime.now().subtract(const Duration(hours: 18)),
+          authorName: 'Brunch Chef',
+          authorAvatarUrl:
+              'https://via.placeholder.com/40x40/FF6B35/FFFFFF?text=STC',
         ),
       ],
     ),
